@@ -4,14 +4,21 @@ let direction = "right";
 
 /* NAV */
 function showSetup() {
-  hideAll(); document.getElementById("setup").classList.remove("hidden");
+  hideAll();
+  document.getElementById("setup").classList.remove("hidden");
 }
+
 function showHistory() {
-  hideAll(); renderHistory();
+  hideAll();
+  document.getElementById("history").classList.remove("hidden");
+  renderHistory();
 }
+
 function goHome() {
-  hideAll(); document.getElementById("home").classList.remove("hidden");
+  hideAll();
+  document.getElementById("home").classList.remove("hidden");
 }
+
 function hideAll() {
   ["home","setup","flip","ratioFlip","game","summary","history"]
     .forEach(id => document.getElementById(id).classList.add("hidden"));
@@ -19,12 +26,12 @@ function hideAll() {
 
 /* FLIP */
 function startFlip() {
-  game.teamA = teamA.value || "A";
-  game.teamB = teamB.value || "B";
-  game.mode = mode.value;
+  game.teamA = document.getElementById("teamA").value || "A";
+  game.teamB = document.getElementById("teamB").value || "B";
+  game.mode = document.getElementById("mode").value;
 
   hideAll();
-  flip.classList.remove("hidden");
+  document.getElementById("flip").classList.remove("hidden");
 
   const disc = document.getElementById("disc");
   disc.classList.add("spin");
@@ -32,7 +39,10 @@ function startFlip() {
   setTimeout(() => {
     const winner = Math.random() < 0.5 ? "A" : "B";
     game.flipWinner = winner;
-    flipResult.innerText = `${winner === "A" ? game.teamA : game.teamB} wins`;
+
+    document.getElementById("flipResult").innerText =
+      `${winner === "A" ? game.teamA : game.teamB} wins`;
+
     disc.classList.remove("spin");
   }, 1000);
 }
@@ -41,20 +51,25 @@ function chooseReceive() {
   game.receivingTeam = game.flipWinner;
   nextStep();
 }
+
 function choosePull() {
   game.receivingTeam = game.flipWinner === "A" ? "B" : "A";
   nextStep();
 }
 
 function nextStep() {
-  flip.classList.add("hidden");
-  if (game.mode === "mixed") ratioFlip.classList.remove("hidden");
-  else startGame();
+  document.getElementById("flip").classList.add("hidden");
+
+  if (game.mode === "mixed") {
+    document.getElementById("ratioFlip").classList.remove("hidden");
+  } else {
+    startGame();
+  }
 }
 
 function setRatio(r) {
   game.startingRatio = r;
-  ratioFlip.classList.add("hidden");
+  document.getElementById("ratioFlip").classList.add("hidden");
   startGame();
 }
 
@@ -64,7 +79,6 @@ function startGame() {
   game.score = { A:0, B:0 };
   currentPoint = 1;
   direction = "right";
-
 
   hideAll();
   document.getElementById("game").classList.remove("hidden");
@@ -79,6 +93,7 @@ function getRatio(p) {
 
   const opp = game.startingRatio === "FMP" ? "MMP" : "FMP";
   const block = Math.floor((p - 2) / 2);
+
   return block % 2 === 0 ? opp : game.startingRatio;
 }
 
@@ -86,7 +101,7 @@ function getRatio(p) {
 function scorePoint(team) {
   const offense = currentPoint === 1
     ? game.receivingTeam
-    : game.points[game.points.length - 1].scoringTeam === "A" ? "B" : "A";
+    : (game.points[game.points.length - 1].scoringTeam === "A" ? "B" : "A");
 
   const type = team === offense ? "hold" : "break";
 
@@ -124,17 +139,17 @@ function endGame() {
 
 /* UI */
 function updateUI() {
-  score.innerText =
+  document.getElementById("score").innerText =
     `${game.teamA} ${game.score.A} - ${game.score.B} ${game.teamB}`;
 
-  pointInfo.innerText =
+  document.getElementById("pointInfo").innerText =
     `Point ${currentPoint} ${getRatio(currentPoint)}`;
 
   renderField();
 }
 
 function renderField() {
-  field.innerHTML = `
+  document.getElementById("field").innerHTML = `
     <div class="endzone left"></div>
     <div class="endzone right"></div>
     <div class="arrow">${direction === "right" ? "→" : "←"}</div>
@@ -144,12 +159,12 @@ function renderField() {
 /* SUMMARY */
 function showSummary() {
   hideAll();
-  summary.classList.remove("hidden");
+  document.getElementById("summary").classList.remove("hidden");
 
   let holds = game.points.filter(p => p.type === "hold").length;
   let breaks = game.points.filter(p => p.type === "break").length;
 
-  summaryContent.innerHTML = `
+  document.getElementById("summaryContent").innerHTML = `
     <p>${game.teamA} ${game.score.A} - ${game.score.B} ${game.teamB}</p>
     <p>Holds: ${holds}</p>
     <p>Breaks: ${breaks}</p>
@@ -165,8 +180,7 @@ function saveGame() {
 }
 
 function renderHistory() {
-  history.classList.remove("hidden");
-  const list = historyList;
+  const list = document.getElementById("historyList");
   list.innerHTML = "";
 
   let games = JSON.parse(localStorage.getItem("games")) || [];
@@ -179,10 +193,15 @@ function renderHistory() {
   });
 }
 
-/* SW */
+/* SERVICE WORKER */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js");
+    const base = window.location.pathname.replace(/\/[^\/]*$/, "/");
+
+    navigator.serviceWorker.register(base + "service-worker.js", {
+      scope: base
+    })
+    .then(() => console.log("SW registered with scope:", base))
+    .catch(err => console.error("SW registration failed:", err));
   });
-}
 }
