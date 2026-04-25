@@ -65,7 +65,6 @@ function startGame() {
   currentPoint = 1;
   direction = "right";
 
-  game.classList?.add?.("nope"); // noop safeguard
 
   hideAll();
   document.getElementById("game").classList.remove("hidden");
