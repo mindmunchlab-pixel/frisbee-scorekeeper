@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Frisbee Scorekeeper</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- HOME -->
+  <div id="home">
+    <h1>Frisbee Scorekeeper</h1>
+    <button onclick="showSetup()">New Game</button>
+    <button onclick="showHistory()">Season History</button>
+  </div>
+
+  <!-- SETUP -->
+  <div id="setup" class="hidden">
+    <h2>New Game</h2>
+    <input id="teamA" placeholder="Team A"/>
+    <input id="teamB" placeholder="Team B"/>
+
+    <select id="mode">
+      <option value="mixed">Mixed</option>
+      <option value="open">Not Mixed</option>
+    </select>
+
+    <button onclick="startFlip()">Flip Disc</button>
+  </div>
+
+  <!-- FLIP -->
+  <div id="flip" class="hidden">
+    <div id="disc" class="disc"></div>
+    <h2 id="flipResult"></h2>
+    <button onclick="chooseReceive()">Receive</button>
+    <button onclick="choosePull()">Pull</button>
+  </div>
+
+  <!-- RATIO -->
+  <div id="ratioFlip" class="hidden">
+    <h3>Starting Ratio</h3>
+    <button onclick="setRatio('FMP')">FMP</button>
+    <button onclick="setRatio('MMP')">MMP</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="game" class="hidden">
+    <h2 id="score"></h2>
+    <h3 id="pointInfo"></h3>
+
+    <div id="field"></div>
+
+    <button onclick="scorePoint('A')">+1 A</button>
+    <button onclick="scorePoint('B')">+1 B</button>
+    <button onclick="undoPoint()">Undo</button>
+    <button onclick="endGame()">End Game</button>
+  </div>
+
+  <!-- SUMMARY -->
+  <div id="summary" class="hidden">
+    <h2>Game Summary</h2>
+    <div id="summaryContent"></div>
+    <button onclick="goHome()">Home</button>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="history" class="hidden">
+    <h2>Season History</h2>
+    <div id="historyList"></div>
+    <button onclick="goHome()">Home</button>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
